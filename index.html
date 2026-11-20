@@ -6,6 +6,7 @@
 <title>NEXAI - Your Personal AI</title>
 <style>
 * { box-sizing: border-box; }
+
 body {
   margin: 0;
   background: #090812;
@@ -14,20 +15,28 @@ body {
   height: 100vh;
   display: flex;
 }
+
 .sidebar {
   width: 240px;
   background: #100e1b;
   padding: 25px;
   border-right: 1px solid #30243e;
 }
+
 .logo {
   font-size: 30px;
   font-weight: bold;
   color: #b58aff;
   letter-spacing: 3px;
 }
-.sidebar p { color: #81768f; font-size: 12px; }
+
+.sidebar p {
+  color: #81768f;
+  font-size: 12px;
+}
+
 button { cursor: pointer; }
+
 .new {
   margin-top: 35px;
   width: 100%;
@@ -37,17 +46,24 @@ button { cursor: pointer; }
   border: 1px solid #60418b;
   border-radius: 12px;
 }
+
 .main {
   flex: 1;
   display: flex;
   flex-direction: column;
   min-width: 0;
 }
+
 header {
   padding: 20px;
   border-bottom: 1px solid #30243e;
 }
-.status { color: #a987e8; font-size: 12px; }
+
+.status {
+  color: #a987e8;
+  font-size: 12px;
+}
+
 .chat {
   flex: 1;
   overflow-y: auto;
@@ -56,10 +72,12 @@ header {
   flex-direction: column;
   gap: 15px;
 }
+
 .welcome {
   margin: auto;
   text-align: center;
 }
+
 .orb {
   width: 85px;
   height: 85px;
@@ -68,8 +86,10 @@ header {
   background: radial-gradient(circle at 30% 30%, #e0caff, #9656e9, #25123d);
   box-shadow: 0 0 50px #9656e966;
 }
+
 .welcome h1 { font-size: 32px; }
 .welcome p { color: #968ba8; }
+
 .message {
   padding: 14px;
   border-radius: 14px;
@@ -77,9 +97,19 @@ header {
   white-space: pre-wrap;
   line-height: 1.5;
 }
-.user { align-self: flex-end; background: #382451; }
-.bot { align-self: flex-start; background: #1b1726; }
+
+.user {
+  align-self: flex-end;
+  background: #382451;
+}
+
+.bot {
+  align-self: flex-start;
+  background: #1b1726;
+}
+
 .bottom { padding: 18px; }
+
 .inputbox {
   display: flex;
   max-width: 800px;
@@ -89,6 +119,7 @@ header {
   border: 1px solid #49345e;
   border-radius: 15px;
 }
+
 input {
   flex: 1;
   min-width: 0;
@@ -99,6 +130,7 @@ input {
   padding: 12px;
   font-size: 16px;
 }
+
 .send {
   background: #b58aff;
   color: #130b20;
@@ -106,17 +138,20 @@ input {
   border-radius: 10px;
   padding: 12px 20px;
 }
+
 .note {
   text-align: center;
   color: #746a80;
   font-size: 11px;
   margin-top: 12px;
 }
+
 @media(max-width:600px) {
-  .sidebar { display:none; }
+  .sidebar { display: none; }
 }
 </style>
 </head>
+
 <body>
 
 <aside class="sidebar">
@@ -126,9 +161,10 @@ input {
 </aside>
 
 <main class="main">
+
 <header>
   <strong>NEXAI</strong>
-  <span class="status"> ● AI PROJECT v0.1</span>
+  <span class="status"> ● AI PROJECT v0.2</span>
 </header>
 
 <section class="chat" id="chat">
@@ -141,12 +177,16 @@ input {
 
 <div class="bottom">
   <div class="inputbox">
-    <input id="prompt" placeholder="Напиши сообщение..."
-    onkeydown="if(event.key==='Enter')sendMessage()">
+    <input
+      id="prompt"
+      placeholder="Напиши сообщение..."
+      onkeydown="if(event.key==='Enter')sendMessage()"
+    >
     <button class="send" onclick="sendMessage()">➤</button>
   </div>
   <div class="note">NEXAI · Personal AI</div>
 </div>
+
 </main>
 
 <script>
@@ -155,6 +195,7 @@ const chat = document.getElementById("chat");
 function sendMessage() {
   const input = document.getElementById("prompt");
   const value = input.value.trim();
+
   if (!value) return;
 
   document.getElementById("welcome")?.remove();
@@ -166,11 +207,14 @@ function sendMessage() {
 
   const bot = document.createElement("div");
   bot.className = "message bot";
-  bot.textContent = "Я получил твоё сообщение! Скоро здесь будет подключена настоящая нейросеть.";
+  bot.textContent =
+    "Я получил твоё сообщение! Скоро здесь будет подключена настоящая нейросеть.";
+
   chat.appendChild(bot);
 
   input.value = "";
   chat.scrollTop = chat.scrollHeight;
+  input.focus();
 }
 
 function newChat() {
@@ -179,8 +223,13 @@ function newChat() {
       <div class="orb"></div>
       <h1>Привет! Я NEXAI.</h1>
       <p>Твой персональный AI-помощник.</p>
-    </div>;
+    </div>
+  ;
+
+  document.getElementById("prompt").value = "";
+  document.getElementById("prompt").focus();
 }
 </script>
+
 </body>
 </html>
