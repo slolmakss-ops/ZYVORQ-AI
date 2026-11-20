@@ -1,11 +1,269 @@
-<div class="bottom">
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>NEXAI - Your Personal AI</title>
+
+<style>
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  background: #090812;
+  color: white;
+  font-family: Arial, sans-serif;
+  height: 100vh;
+  height: 100dvh;
+  display: flex;
+}
+
+.sidebar {
+  width: 250px;
+  flex-shrink: 0;
+  background: #100e1b;
+  padding: 22px;
+  border-right: 1px solid #30243e;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+}
+
+.logo {
+  font-size: 30px;
+  font-weight: bold;
+  color: #b58aff;
+  letter-spacing: 3px;
+}
+
+.sidebar p {
+  color: #81768f;
+  font-size: 12px;
+}
+
+button { cursor: pointer; }
+
+.new {
+  margin-top: 25px;
+  width: 100%;
+  padding: 13px;
+  background: #281c3b;
+  color: white;
+  border: 1px solid #60418b;
+  border-radius: 12px;
+}
+
+.history-title {
+  color: #968ba8;
+  font-size: 13px;
+  margin-top: 28px;
+  margin-bottom: 12px;
+}
+
+.history-list {
+  overflow-y: auto;
+  flex: 1;
+  min-height: 0;
+}
+
+.history-item {
+  display: block;
+  width: 100%;
+  padding: 12px;
+  margin-bottom: 7px;
+  border: 1px solid transparent;
+  border-radius: 10px;
+  background: transparent;
+  color: #c5b8d4;
+  text-align: left;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: 14px;
+}
+
+.history-item:hover {
+  background: #211a30;
+}
+
+.history-item.active {
+  background: #30213f;
+  border-color: #60418b;
+  color: white;
+}
+
+.main {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  min-height: 0;
+}
+
+header {
+  padding: 20px;
+  border-bottom: 1px solid #30243e;
+}
+
+.status {
+  color: #a987e8;
+  font-size: 12px;
+}
+
+.chat {
+  flex: 1;
+  overflow-y: auto;
+  padding: 25px;
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.welcome {
+  margin: auto;
+  text-align: center;
+}
+
+.orb {
+  width: 85px;
+  height: 85px;
+  border-radius: 50%;
+  margin: auto;
+  background: radial-gradient(circle at 30% 30%, #e0caff, #9656e9, #25123d);
+  box-shadow: 0 0 50px #9656e966;
+}
+
+.welcome h1 { font-size: 32px; }
+.welcome p { color: #968ba8; }
+
+.message {
+  padding: 14px;
+  border-radius: 14px;
+  max-width: 80%;
+  white-space: pre-wrap;
+  line-height: 1.5;
+  overflow-wrap: anywhere;
+}
+
+.user {
+  align-self: flex-end;
+  background: #382451;
+}
+
+.bot {
+  align-self: flex-start;
+  background: #1b1726;
+}
+
+.bottom { padding: 18px; }
+
+.inputbox {
+  display: flex;
+  max-width: 800px;
+  margin: auto;
+  padding: 8px;
+  background: #1b1726;
+  border: 1px solid #49345e;
+  border-radius: 15px;
+}
+
+input {
+  flex: 1;
+  min-width: 0;
+  background: transparent;
+  color: white;
+  border: none;
+  outline: none;
+  padding: 12px;
+  font-size: 16px;
+}
+
+.send {
+  background: #b58aff;
+  color: #130b20;
+  border: none;
+  border-radius: 10px;
+  padding: 12px 20px;
+}
+
+.note {
+  text-align: center;
+  color: #746a80;
+  font-size: 11px;
+  margin-top: 12px;
+}
+
+@media(max-width:600px) {
+  body { flex-direction: column; }
+
+  .sidebar {
+    width: 100%;
+    height: 190px;
+    padding: 10px 15px;
+    border-right: none;
+    border-bottom: 1px solid #30243e;
+  }
+
+  .logo { font-size: 23px; }
+
+  .sidebar p { margin: 3px 0; }
+
+  .new {
+    margin-top: 7px;
+    padding: 9px;
+  }
+
+  .history-title {
+    margin-top: 10px;
+    margin-bottom: 5px;
+  }
+
+  .history-list {
+    display: flex;
+    gap: 7px;
+    overflow-x: auto;
+    overflow-y: hidden;
+    flex: 1;
+  }
+
+  .history-item {
+    width: 145px;
+    min-width: 145px;
+    height: 35px;
+    padding: 8px;
+    margin: 0;
+  }
+
+  .chat { padding: 15px; }
+}
+</style>
+</head>
+
+<body>
+
+<aside class="sidebar">
+  <div class="logo">NEXAI</div>
+  <p>YOUR PERSONAL AI</p>
+
+  <button class="new" id="newChatButton">
+    + Новый чат
+  </button>
+
+  <div class="history-title">История чатов</div>
+  <div class="history-list" id="historyList"></div>
+</aside>
+
+<main class="main">
+
+<header>
+  <strong>NEXAI</strong>
+  <span class="status"> ● AI PROJECT v0.5</span>
+</header>
+
+<section class="chat" id="chat"></section><div class="bottom">
   <div class="inputbox">
-    <input
-      id="prompt"
-      placeholder="Напиши сообщение..."
-      onkeydown="if(event.key==='Enter')sendMessage()"
-    >
-    <button class="send" onclick="sendMessage()">➤</button>
+    <input id="prompt" placeholder="Напиши сообщение...">
+    <button class="send" id="sendButton">➤</button>
   </div>
   <div class="note">NEXAI · Personal AI</div>
 </div>
@@ -13,51 +271,48 @@
 </main>
 
 <script>
-
 const STORAGE_KEY = "nexai_chats_v1";
 
 let chats = [];
 let activeChatId = null;
 
+const chatElement = document.getElementById("chat");
+const historyList = document.getElementById("historyList");
+const input = document.getElementById("prompt");
+
 function saveChats() {
   try {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(chats));
   } catch (error) {
-    alert("Не удалось сохранить историю чатов.");
+    alert("Ошибка сохранения истории.");
   }
 }
 
 function getActiveChat() {
-  return chats.find(c => c.id === activeChatId);
+  return chats.find(c => c.id === activeChatId) || null;
 }
 
 function createChat() {
-  const current = {
+  const newChat = {
     id: Date.now().toString() + Math.random().toString(36).slice(2),
     title: "Новый чат",
     messages: [],
     createdAt: Date.now()
   };
 
-  chats.unshift(current);
-  activeChatId = current.id;
+  chats.unshift(newChat);
+  activeChatId = newChat.id;
 
   saveChats();
   renderHistory();
   renderChat();
-}
 
-function newChat() {
-  createChat();
-
-  const input = document.getElementById("prompt");
   input.value = "";
   input.focus();
 }
 
 function renderHistory() {
-  const list = document.getElementById("historyList");
-  list.replaceChildren();
+  historyList.replaceChildren();
 
   chats.forEach(item => {
     const button = document.createElement("button");
@@ -67,20 +322,18 @@ function renderHistory() {
 
     button.textContent = item.title;
 
-    button.title = item.title;
-
     button.onclick = function() {
       activeChatId = item.id;
       renderHistory();
       renderChat();
+      input.value = "";
     };
 
-    list.appendChild(button);
+    historyList.appendChild(button);
   });
 }
 
 function renderChat() {
-  const chatElement = document.getElementById("chat");
   chatElement.replaceChildren();
 
   const current = getActiveChat();
@@ -105,48 +358,39 @@ function renderChat() {
 
   current.messages.forEach(message => {
     const element = document.createElement("div");
-
     element.className = "message " + message.role;
     element.textContent = message.text;
-
     chatElement.appendChild(element);
   });
 
   chatElement.scrollTop = chatElement.scrollHeight;
 }
 
-function makeTitle(text) {
-  const clean = text.replace(/\s+/g, " ").trim();
-
-  if (clean.length <= 30) return clean;
-
-  return clean.slice(0, 30).trimEnd() + "...";
-}
-
 function sendMessage() {
-  const input = document.getElementById("prompt");
   const value = input.value.trim();
 
   if (!value) return;
 
   let current = getActiveChat();
 
+  // Если активного чата нет — создаём новый.
   if (!current) {
     createChat();
     current = getActiveChat();
   }
 
-  const firstMessage = !current.messages.some(
-    message => message.role === "user"
-  );
+  const firstMessage = current.messages.length === 0;
 
   current.messages.push({
     role: "user",
     text: value
   });
 
+  // Название формируется из первого сообщения.
   if (firstMessage) {
-    current.title = makeTitle(value);
+    current.title = value.length > 30
+      ? value.slice(0, 30).trim() + "..."
+      : value;
   }
 
   current.messages.push({
@@ -159,9 +403,18 @@ function sendMessage() {
   saveChats();
   renderHistory();
   renderChat();
-
   input.focus();
 }
+
+document.getElementById("newChatButton").addEventListener("click", createChat);
+document.getElementById("sendButton").addEventListener("click", sendMessage);
+
+input.addEventListener("keydown", function(event) {
+  if (event.key === "Enter") {
+    event.preventDefault();
+    sendMessage();
+  }
+});
 
 function loadChats() {
   try {
@@ -173,18 +426,21 @@ function loadChats() {
           c &&
           typeof c.id === "string" &&
           typeof c.title === "string" &&
-          Array.isArray(c.messages)
+          Array.isArray(c.messages) &&
+          c.messages.every(m =>
+            m &&
+            ["user", "bot"].includes(m.role) &&
+            typeof m.text === "string"
+          )
         )
       : [];
-
   } catch (error) {
     chats = [];
-  }
-
-  if (chats.length > 0) {
+  }if (chats.length > 0) {
     activeChatId = chats[0].id;
   } else {
     createChat();
+    return;
   }
 
   renderHistory();
@@ -192,7 +448,6 @@ function loadChats() {
 }
 
 loadChats();
-
 </script>
 
 </body>
