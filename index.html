@@ -1,180 +1,3 @@
-<!DOCTYPE html>
-<html lang="ru">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>NEXAI - Your Personal AI</title>
-<style>
-* { box-sizing: border-box; }
-
-body {
-  margin: 0;
-  background: #090812;
-  color: white;
-  font-family: Arial, sans-serif;
-  height: 100vh;
-  display: flex;
-}
-
-.sidebar {
-  width: 240px;
-  background: #100e1b;
-  padding: 25px;
-  border-right: 1px solid #30243e;
-}
-
-.logo {
-  font-size: 30px;
-  font-weight: bold;
-  color: #b58aff;
-  letter-spacing: 3px;
-}
-
-.sidebar p {
-  color: #81768f;
-  font-size: 12px;
-}
-
-button { cursor: pointer; }
-
-.new {
-  margin-top: 35px;
-  width: 100%;
-  padding: 13px;
-  background: #281c3b;
-  color: white;
-  border: 1px solid #60418b;
-  border-radius: 12px;
-}
-
-.main {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  min-width: 0;
-}
-
-header {
-  padding: 20px;
-  border-bottom: 1px solid #30243e;
-}
-
-.status {
-  color: #a987e8;
-  font-size: 12px;
-}
-
-.chat {
-  flex: 1;
-  overflow-y: auto;
-  padding: 25px;
-  display: flex;
-  flex-direction: column;
-  gap: 15px;
-}
-
-.welcome {
-  margin: auto;
-  text-align: center;
-}
-
-.orb {
-  width: 85px;
-  height: 85px;
-  border-radius: 50%;
-  margin: auto;
-  background: radial-gradient(circle at 30% 30%, #e0caff, #9656e9, #25123d);
-  box-shadow: 0 0 50px #9656e966;
-}
-
-.welcome h1 { font-size: 32px; }
-.welcome p { color: #968ba8; }
-
-.message {
-  padding: 14px;
-  border-radius: 14px;
-  max-width: 80%;
-  white-space: pre-wrap;
-  line-height: 1.5;
-}
-
-.user {
-  align-self: flex-end;
-  background: #382451;
-}
-
-.bot {
-  align-self: flex-start;
-  background: #1b1726;
-}
-
-.bottom { padding: 18px; }
-
-.inputbox {
-  display: flex;
-  max-width: 800px;
-  margin: auto;
-  padding: 8px;
-  background: #1b1726;
-  border: 1px solid #49345e;
-  border-radius: 15px;
-}
-
-input {
-  flex: 1;
-  min-width: 0;
-  background: transparent;
-  color: white;
-  border: none;
-  outline: none;
-  padding: 12px;
-  font-size: 16px;
-}
-
-.send {
-  background: #b58aff;
-  color: #130b20;
-  border: none;
-  border-radius: 10px;
-  padding: 12px 20px;
-}
-
-.note {
-  text-align: center;
-  color: #746a80;
-  font-size: 11px;
-  margin-top: 12px;
-}
-
-@media(max-width:600px) {
-  .sidebar { display: none; }
-}
-</style>
-</head>
-
-<body>
-
-<aside class="sidebar">
-  <div class="logo">NEXAI</div>
-  <p>YOUR PERSONAL AI</p>
-  <button class="new" onclick="newChat()">+ Новый чат</button>
-</aside>
-
-<main class="main">
-
-<header>
-  <strong>NEXAI</strong>
-  <span class="status"> ● AI PROJECT v0.2</span>
-</header>
-
-<section class="chat" id="chat">
-  <div class="welcome" id="welcome">
-    <div class="orb"></div>
-    <h1>Привет! Я NEXAI.</h1>
-    <p>Твой персональный AI-помощник.</p>
-  </div>
-</section>
-
 <div class="bottom">
   <div class="inputbox">
     <input
@@ -190,7 +13,115 @@ input {
 </main>
 
 <script>
-const chat = document.getElementById("chat");
+
+const STORAGE_KEY = "nexai_chats_v1";
+
+let chats = [];
+let activeChatId = null;
+
+function saveChats() {
+  try {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(chats));
+  } catch (error) {
+    alert("Не удалось сохранить историю чатов.");
+  }
+}
+
+function getActiveChat() {
+  return chats.find(c => c.id === activeChatId);
+}
+
+function createChat() {
+  const current = {
+    id: Date.now().toString() + Math.random().toString(36).slice(2),
+    title: "Новый чат",
+    messages: [],
+    createdAt: Date.now()
+  };
+
+  chats.unshift(current);
+  activeChatId = current.id;
+
+  saveChats();
+  renderHistory();
+  renderChat();
+}
+
+function newChat() {
+  createChat();
+
+  const input = document.getElementById("prompt");
+  input.value = "";
+  input.focus();
+}
+
+function renderHistory() {
+  const list = document.getElementById("historyList");
+  list.replaceChildren();
+
+  chats.forEach(item => {
+    const button = document.createElement("button");
+
+    button.className = "history-item" +
+      (item.id === activeChatId ? " active" : "");
+
+    button.textContent = item.title;
+
+    button.title = item.title;
+
+    button.onclick = function() {
+      activeChatId = item.id;
+      renderHistory();
+      renderChat();
+    };
+
+    list.appendChild(button);
+  });
+}
+
+function renderChat() {
+  const chatElement = document.getElementById("chat");
+  chatElement.replaceChildren();
+
+  const current = getActiveChat();
+
+  if (!current || current.messages.length === 0) {
+    const welcome = document.createElement("div");
+    welcome.className = "welcome";
+
+    const orb = document.createElement("div");
+    orb.className = "orb";
+
+    const title = document.createElement("h1");
+    title.textContent = "Привет! Я NEXAI.";
+
+    const description = document.createElement("p");
+    description.textContent = "Твой персональный AI-помощник.";
+
+    welcome.append(orb, title, description);
+    chatElement.appendChild(welcome);
+    return;
+  }
+
+  current.messages.forEach(message => {
+    const element = document.createElement("div");
+
+    element.className = "message " + message.role;
+    element.textContent = message.text;
+
+    chatElement.appendChild(element);
+  });
+
+  chatElement.scrollTop = chatElement.scrollHeight;
+}
+
+function makeTitle(text) {
+  const clean = text.replace(/\s+/g, " ").trim();
+
+  if (clean.length <= 30) return clean;
+
+  return clean.slice(0, 30).trimEnd() + "...";
+}
 
 function sendMessage() {
   const input = document.getElementById("prompt");
@@ -198,47 +129,70 @@ function sendMessage() {
 
   if (!value) return;
 
-  const welcome = document.getElementById("welcome");
-  if (welcome) welcome.remove();
+  let current = getActiveChat();
 
-  const user = document.createElement("div");
-  user.className = "message user";
-  user.textContent = value;
-  chat.appendChild(user);
+  if (!current) {
+    createChat();
+    current = getActiveChat();
+  }
 
-  const bot = document.createElement("div");
-  bot.className = "message bot";
-  bot.textContent =
-    "Я получил твоё сообщение! Скоро здесь будет подключена настоящая нейросеть.";
+  const firstMessage = !current.messages.some(
+    message => message.role === "user"
+  );
 
-  chat.appendChild(bot);
+  current.messages.push({
+    role: "user",
+    text: value
+  });
+
+  if (firstMessage) {
+    current.title = makeTitle(value);
+  }
+
+  current.messages.push({
+    role: "bot",
+    text: "Я получил твоё сообщение! Скоро здесь будет подключена настоящая нейросеть."
+  });
 
   input.value = "";
-  chat.scrollTop = chat.scrollHeight;
+
+  saveChats();
+  renderHistory();
+  renderChat();
+
   input.focus();
 }
 
-function newChat() {
-  chat.replaceChildren();
+function loadChats() {
+  try {
+    const saved = localStorage.getItem(STORAGE_KEY);
+    const parsed = saved ? JSON.parse(saved) : [];
 
-  const welcome = document.createElement("div");
-  welcome.className = "welcome";
-  welcome.id = "welcome";
+    chats = Array.isArray(parsed)
+      ? parsed.filter(c =>
+          c &&
+          typeof c.id === "string" &&
+          typeof c.title === "string" &&
+          Array.isArray(c.messages)
+        )
+      : [];
 
-  const orb = document.createElement("div");
-  orb.className = "orb";
+  } catch (error) {
+    chats = [];
+  }
 
-  const title = document.createElement("h1");
-  title.textContent = "Привет! Я NEXAI.";const description = document.createElement("p");
-  description.textContent = "Твой персональный AI-помощник.";
+  if (chats.length > 0) {
+    activeChatId = chats[0].id;
+  } else {
+    createChat();
+  }
 
-  welcome.append(orb, title, description);
-  chat.appendChild(welcome);
-
-  const input = document.getElementById("prompt");
-  input.value = "";
-  input.focus();
+  renderHistory();
+  renderChat();
 }
+
+loadChats();
+
 </script>
 
 </body>
