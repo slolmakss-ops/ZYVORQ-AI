@@ -198,7 +198,8 @@ function sendMessage() {
 
   if (!value) return;
 
-  document.getElementById("welcome")?.remove();
+  const welcome = document.getElementById("welcome");
+  if (welcome) welcome.remove();
 
   const user = document.createElement("div");
   user.className = "message user";
@@ -218,16 +219,25 @@ function sendMessage() {
 }
 
 function newChat() {
-  chat.innerHTML = 
-    <div class="welcome" id="welcome">
-      <div class="orb"></div>
-      <h1>Привет! Я NEXAI.</h1>
-      <p>Твой персональный AI-помощник.</p>
-    </div>
-  ;
+  chat.replaceChildren();
 
-  document.getElementById("prompt").value = "";
-  document.getElementById("prompt").focus();
+  const welcome = document.createElement("div");
+  welcome.className = "welcome";
+  welcome.id = "welcome";
+
+  const orb = document.createElement("div");
+  orb.className = "orb";
+
+  const title = document.createElement("h1");
+  title.textContent = "Привет! Я NEXAI.";const description = document.createElement("p");
+  description.textContent = "Твой персональный AI-помощник.";
+
+  welcome.append(orb, title, description);
+  chat.appendChild(welcome);
+
+  const input = document.getElementById("prompt");
+  input.value = "";
+  input.focus();
 }
 </script>
 
