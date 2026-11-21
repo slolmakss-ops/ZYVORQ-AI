@@ -186,6 +186,11 @@ input {
   padding: 12px 20px;
 }
 
+.send:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
 .note {
   text-align: center;
   color: #746a80;
@@ -271,14 +276,17 @@ input {
 </main>
 
 <script>
+const API_URL = "https://nexai-server-29.onrender.com/api/chat";
 const STORAGE_KEY = "nexai_chats_v1";
 
 let chats = [];
 let activeChatId = null;
+let isSending = false;
 
 const chatElement = document.getElementById("chat");
 const historyList = document.getElementById("historyList");
 const input = document.getElementById("prompt");
+const sendButton = document.getElementById("sendButton");
 
 function saveChats() {
   try {
@@ -366,14 +374,13 @@ function renderChat() {
   chatElement.scrollTop = chatElement.scrollHeight;
 }
 
-function sendMessage() {
-  const value = input.value.trim();
+async function sendMessage() {
+  if (isSending) return;
 
+  const value = input.value.trim();
   if (!value) return;
 
   let current = getActiveChat();
-
-  // Если активного чата нет — создаём новый.
   if (!current) {
     createChat();
     current = getActiveChat();
@@ -386,30 +393,55 @@ function sendMessage() {
     text: value
   });
 
-  // Название формируется из первого сообщения.
   if (firstMessage) {
     current.title = value.length > 30
       ? value.slice(0, 30).trim() + "..."
       : value;
   }
 
-  current.messages.push({
-    role: "bot",
-    text: "Я получил твоё сообщение! Скоро здесь будет подключена настоящая нейросеть."
-  });
-
   input.value = "";
+  isSending = true;
+  sendButton.disabled = true;
+
+  const typingMsg = {
+    role: "bot",
+    text: "Думаю..."
+  };
+  current.messages.push(typingMsg);
 
   saveChats();
   renderHistory();
   renderChat();
-  input.focus();
+
+  try {
+    const res = await fetch(API_URL, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({ message: value })
+    });
+
+    const data = await res.json();
+
+    if (!res.ok) {
+      typingMsg.text = "Ошибка: " + (data.error || "Сервер вернул ошибку");
+    } else {
+      typingMsg.text = data.reply || "Пустой ответ от модели";
+    }
+  } catch (err) {
+    typingMsg.text = "Ошибка сети: не удалось связаться с сервером NEXAI.";
+  } finally {
+    isSending = false;
+    sendButton.disabled = false;
+    saveChats();
+    renderChat();
+    input.focus();
+  }
 }
 
 document.getElementById("newChatButton").addEventListener("click", createChat);
-document.getElementById("sendButton").addEventListener("click", sendMessage);
-
-input.addEventListener("keydown", function(event) {
+sendButton.addEventListener("click", sendMessage);input.addEventListener("keydown", function(event) {
   if (event.key === "Enter") {
     event.preventDefault();
     sendMessage();
@@ -436,7 +468,9 @@ function loadChats() {
       : [];
   } catch (error) {
     chats = [];
-  }if (chats.length > 0) {
+  }
+
+  if (chats.length > 0) {
     activeChatId = chats[0].id;
   } else {
     createChat();
